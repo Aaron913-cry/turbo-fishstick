@@ -1,0 +1,31 @@
+name: Build Aaron OS
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout My OS Files
+      uses: actions/checkout@v4
+
+    - name: Free Cloud Space
+      run: |
+        sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost
+        docker system prune -af
+
+    - name: Build Aaron OS ISO
+      run: |
+        docker run --privileged -v ${{ github.workspace }}:/work -w /work archlinux:latest bash -c "
+          pacman -Syu --noconfirm archiso &&
+          cp -r /usr/share/archiso/configs/releng/* /tmp/profile/ &&
+          cp /work/configs/profiledef.sh /tmp/profile/profiledef.sh &&
+          cat /work/configs/packages.x86_64 >> /tmp/profile/packages.x86_64 &&
+          mkarchiso -v -w /tmp/work -o /work/out /tmp/profile/
+        "
+
+    - name: Upload Finished ISO
+      uses: actions/upload-artifact@v4
+      with:
+        name: AaronOS-x86_64
+        path: out/*.iso
