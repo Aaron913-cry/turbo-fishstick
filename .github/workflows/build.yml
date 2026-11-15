@@ -29,3 +29,4 @@ jobs:
       with:
         name: AaronOS-x86_64
         path: out/*.iso
+cp /work/configs/setup-stores.sh /tmp/profile/airootfs/usr/local/bin/setup-stores && chmod +x /tmp/profile/airootfs/usr/local/bin/setup-stores
